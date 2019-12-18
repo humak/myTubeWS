@@ -47,10 +47,9 @@ public class MyResource {
 	@Produces(MediaType.APPLICATION_JSON)
     public Response getDummyItem(@PathParam("name") String name) {
         
-    	List<Item> results = new ArrayList<>();        
-    	// Item(Integer key, String name, String description, Integer owner, String path, TubeInterface targetServerRef, Integer server_id) {
-    	results.add(new Item(1, name, "Hello descr", -1, "/somewhere/folder", null, -1));
-    	results.add(new Item(2, "Great Item", "Hello descr two", -1, "/somewhere/fold/data.txt", null, -2));
+    	List<Item> results = new ArrayList<>();            	
+    	results.add(new Item(1, name, "Hello descr", -1, "/somewhere/folder", -1));
+    	results.add(new Item(2, "Great Item", "Hello descr two", -1, "/somewhere/fold/data.txt", -2));
     	
     	try {
 			DataBase.start();
@@ -62,12 +61,13 @@ public class MyResource {
 	
     // POST Item
     @POST
-    @Path("/item")
+    @Path("/item")  
+    @Produces(MediaType.APPLICATION_JSON)
     public Response postItem(Item item) throws SQLException {        
         
         Integer key = -1;
 		try {
-			key = DataBase.add(item.getName(), item.getDescription(), item.getOwner(), item.getServerId(), item.getPath());
+			key = DataBase.add(item.getName(), item.getDescription(), item.getOwner(), item.getServer(), item.getPath());
 		} catch (ClassNotFoundException | NamingException e) {						
 			return Response.status(500).entity("Error in DB: " + e.toString()).build();
 		}
@@ -79,7 +79,7 @@ public class MyResource {
     @GET
     @Path("/global-item/{search_key}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGlobalItem(@PathParam("search_key") String search_key) {
+    public Response getLocalItem(@PathParam("search_key") String search_key) {
         try {
         	List<Item> results = new ArrayList<>();            
 			results = DataBase.search(search_key);                        
@@ -94,7 +94,7 @@ public class MyResource {
     @GET
     @Path("/local-item/{search_key}/server/{server_id}/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getLocalItem(@PathParam("search_key") String search_key, @PathParam("server_id") String server_id) {
+    public Response getGlobalItem(@PathParam("search_key") String search_key, @PathParam("server_id") String server_id) {
     	try {
         	List<Item> results = new ArrayList<>();            
 			results = DataBase.searchByServer(search_key, Integer.parseInt(server_id)) ;                      
@@ -108,7 +108,7 @@ public class MyResource {
     // UPDATE item name
     @POST
     @Path("/item/{key}/name/{new_name}")
-    @Produces(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response updateItemName(@PathParam("key") String key, @PathParam("new_name") String new_name) {
         try {
             DataBase.updateItemName(Integer.parseInt(key), new_name);
@@ -122,7 +122,7 @@ public class MyResource {
     // UPDATE item description
     @POST
     @Path("/item/{key}/description/{new_descr}")
-    @Produces(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response updateItemDescription(@PathParam("key") String key, @PathParam("new_descr") String new_descr) {
         try {
             DataBase.updateItemDescr(Integer.parseInt(key), new_descr);
@@ -151,7 +151,7 @@ public class MyResource {
     // DELETE item
     @DELETE
     @Path("/item/{key}")
-    @Produces(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response deleteItem(@PathParam("key") String key) {
         try {
             DataBase.delete(Integer.parseInt(key));
@@ -196,7 +196,7 @@ public class MyResource {
     // DELETE a server by server_id
     @DELETE
     @Path("/server/{server_id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response deleteServer(@PathParam("server_id") String server_id) {
     	try {
             DataBase.deleteServer(Integer.parseInt(server_id));

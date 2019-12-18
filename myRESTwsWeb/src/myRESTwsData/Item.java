@@ -11,19 +11,24 @@ public class Item implements Serializable {
     private String description;
     private Integer owner;
     private String path;
-    private TubeInterface targetServerRef;
-    private Integer server_id;
+    //private TubeInterface targetServerRef;
+    private Integer server; //server_id
+    
     //public Item(Integer key, String name, String description, Integer owner, String path,  Integer server_id) {
-    public Item(Integer key, String name, String description, Integer owner, String path, TubeInterface targetServerRef, Integer server_id) {
+    public Item(Integer key, String name, String description, Integer owner, String path, Integer server) {
         this.key = key;
         this.name = name;
         this.description = description;
         this.owner = owner;
         this.path = path;
-        this.targetServerRef = targetServerRef;
-        this.server_id = server_id;
+        //this.targetServerRef = targetServerRef;
+        this.server = server;
     }   
 
+    public Item() { // Seems necessary
+    	
+    }
+    
     // And some getters
 
 	public long getKey() {
@@ -46,18 +51,23 @@ public class Item implements Serializable {
         return path;
     }
 
+    /*
     public TubeInterface getTargetServerRef() {
         return targetServerRef;
     }
+	*/
 
-
-    public Integer getServerId() {
-        return server_id;
+    public Integer getServer() {
+        return server;
     }
     
+    /*
     public void setTargetServerRef(TubeInterface targetServerRef) {
         this.targetServerRef = targetServerRef;
     }
+    */
+    
+    
 
 
 

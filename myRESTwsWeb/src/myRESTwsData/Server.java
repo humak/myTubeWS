@@ -13,6 +13,10 @@ public class Server {
 		this.ip = ip;
 		this.port = port;
     }
+        
+    public Server() { // Seems necessary
+    	
+    }
     
     public Integer getId(){
       	return this.server_id;

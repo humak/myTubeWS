@@ -68,6 +68,58 @@ public class DataBase implements Remote {
             //System.exit(0);
         }
     }
+    
+    
+    /*
+    public static void startPSQL(int i) throws SQLException, ClassNotFoundException, NamingException {
+        //database start
+    	
+        //Connection c = null;
+        String sql;
+        //create(dbname);
+        //System.out.println("check pgAdmin4 for the database "+dbname +local_id + "press enter when ready");
+        //Scanner myObj = new Scanner(System.in);
+        //String check = myObj.nextLine();
+        try {
+            Statement stmt = null;
+            //try to connect to database
+            //???creating database???
+            Class.forName("org.postgresql.Driver");
+            Connection c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/local5", "postgres", "123456");
+            //stmt = null;
+            stmt = c.createStatement();
+            sql = "CREATE TABLE IF NOT EXISTS USERS(" +
+                    "NAME VARCHAR NOT NULL UNIQUE," +
+                    "PASSWORD VARCHAR NOT NULL," +
+                    "ID SERIAL PRIMARY KEY" +
+                    ");\n";
+            sql =sql+ "CREATE TABLE IF NOT EXISTS ITEMS(" +
+                    " NAME VARCHAR NOT NULL," +
+                    " DESCRIPTION VARCHAR NOT NULL," +
+                    " OWNER INTEGER NOT NULL," +
+                    " KEY SERIAL NOT NULL," +
+                    " SERVER INTEGER NOT NULL,"+
+                    " PATH VARCHAR NOT NULL," +
+                    " FOREIGN KEY (OWNER) REFERENCES USERS(ID) ON DELETE CASCADE );";
+            
+            sql =sql+ "CREATE TABLE IF NOT EXISTS SERVERS(" +
+                    " ID SERIAL PRIMARY KEY," +
+                    " IP VARCHAR NOT NULL," +
+                    " PORT INTEGER NOT NULL );";
+            //System.out.println(sql);
+
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+            System.out.println("Tables in place");
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            //System.exit(0);
+        }
+    }
+    */
 	
     /*
     private static void create(String dbname) throws SQLException, ClassNotFoundException, NamingException {
@@ -99,7 +151,7 @@ public class DataBase implements Remote {
     }
     */
 
-    public static int add(String name, String description, Integer owner,Integer server_id, String path) throws SQLException, ClassNotFoundException, NamingException {
+    public static int add(String name, String description, Integer owner, Integer server, String path) throws SQLException, ClassNotFoundException, NamingException {
     	InitialContext cxt = new InitialContext();
         DataSource data = (DataSource) cxt.lookup("java:/PostgresXADS");
         Connection c = data.getConnection();
@@ -111,8 +163,8 @@ public class DataBase implements Remote {
         //c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/local"+local_id, "postgres", "4558");
         c.setAutoCommit(false);
         stmt = c.createStatement();
-        sql = "INSERT INTO public.items (name, description, owner,server, path) \n VALUES (\'";
-        sql = sql + name +"\',\'" + description +"\',"+ owner + ","+ server_id + ",\'"+ path +"\') RETURNING key;";
+        sql = "INSERT INTO public.items (name, description, owner, server, path) \n VALUES (\'";
+        sql = sql + name +"\',\'" + description +"\',"+ owner + ","+ server + ",\'"+ path +"\') RETURNING key;";
         //stmt.executeUpdate(sql);
 
         ResultSet rs = stmt.executeQuery( sql );
@@ -171,7 +223,7 @@ public class DataBase implements Remote {
             //String  name = rs.getString("name");
             //String desc = rs.getString("description");
             //xSystem.out.println(name);	           
-            result.add(new Item(i, rs.getString("name"), rs.getString("description"),  (Integer)rs.getInt("owner"),  rs.getString("path"), (TubeInterface)null, (Integer)rs.getInt("server")));
+            result.add(new Item(i, rs.getString("name"), rs.getString("description"),  (Integer)rs.getInt("owner"),  rs.getString("path"), (Integer)rs.getInt("server")));
             i++;
         }
         rs.close();
@@ -204,7 +256,7 @@ public class DataBase implements Remote {
             //String desc = rs.getString("description");
             //int key =rs.getInt("key");
             //System.out.println(name);
-            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"),null,rs.getInt("server")));
+            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"), rs.getInt("server")));
             i++;
         }
         rs.close();
@@ -229,7 +281,7 @@ public class DataBase implements Remote {
         c.setAutoCommit(false);
 
         stmt = c.createStatement();
-        ResultSet rs = stmt.executeQuery( "SELECT * FROM ITEMS WHERE name ilike \'%"+search_key+"%\' or description ilike \'%"+search_key+"%\' AND server_id = " + server_id.toString() +" ;");
+        ResultSet rs = stmt.executeQuery( "SELECT * FROM ITEMS WHERE name ilike \'%"+search_key+"%\' or description ilike \'%"+search_key+"%\' AND server = " + server_id.toString() +" ;");
         ArrayList<Item> result = new ArrayList<>();
         int i =0;
         while ( rs.next() ) {
@@ -237,7 +289,7 @@ public class DataBase implements Remote {
             //String desc = rs.getString("description");
             //int key =rs.getInt("key");
             //System.out.println(name);
-            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"),null,rs.getInt("server")));
+            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"), rs.getInt("server")));
             i++;
         }
         rs.close();
@@ -269,7 +321,7 @@ public class DataBase implements Remote {
             //String desc = rs.getString("description");
             //int key =rs.getInt("key");
             //System.out.println(name);
-            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"),null,rs.getInt("server")));
+            result.add(new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"), rs.getInt("server")));
             i++;
         }
         rs.close();
@@ -431,7 +483,7 @@ public class DataBase implements Remote {
     }
     
     // SERVERS
-    
+        
     public static int newServer(Integer id, String ip, Integer port) throws ClassNotFoundException, SQLException, NamingException {
     	InitialContext cxt = new InitialContext();
         DataSource data = (DataSource) cxt.lookup("java:/PostgresXADS");
@@ -439,7 +491,7 @@ public class DataBase implements Remote {
                  
         c.setAutoCommit(false);
         Statement stmt = c.createStatement();
-        String sql = "INSERT INTO users (id, ip, port) VALUES ("+id+", '"+ip+"', "+port+") RETURNING id;";
+        String sql = "INSERT INTO servers (ip, port) VALUES ('"+ip+"', "+port+") RETURNING id;";
 
         ResultSet rs = stmt.executeQuery( sql );
         rs.next();
@@ -464,7 +516,7 @@ public class DataBase implements Remote {
         ResultSet rs = stmt.executeQuery( "SELECT * FROM ITEMS WHERE key = "+key+" ;");        
         
         rs.next();
-        Item result = new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"),null,rs.getInt("server"));
+        Item result = new Item(rs.getInt("key"), rs.getString("name"), rs.getString("description"),  rs.getInt("owner"),  rs.getString("path"), rs.getInt("server"));
             
         rs.close();
         stmt.close();
