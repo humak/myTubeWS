@@ -79,7 +79,7 @@ public class MyResource {
     @GET
     @Path("/global-item/{search_key}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getLocalItem(@PathParam("search_key") String search_key) {
+    public Response getGlobalItem(@PathParam("search_key") String search_key) {
         try {
         	List<Item> results = new ArrayList<>();            
 			results = DataBase.search(search_key);                        
@@ -94,7 +94,7 @@ public class MyResource {
     @GET
     @Path("/local-item/{search_key}/server/{server_id}/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGlobalItem(@PathParam("search_key") String search_key, @PathParam("server_id") String server_id) {
+    public Response getLocalItem(@PathParam("search_key") String search_key, @PathParam("server_id") String server_id) {
     	try {
         	List<Item> results = new ArrayList<>();            
 			results = DataBase.searchByServer(search_key, Integer.parseInt(server_id)) ;                      
