@@ -2,16 +2,19 @@ package myRESTwsData;
 
 import java.io.Serializable;
 
-import common.TubeInterface;
-
 public class Item implements Serializable {
 
-    private Integer key;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer key;
     private String name;
     private String description;
-    private Integer owner;
+    private Integer owner; // user_id
     private String path;
-    //private TubeInterface targetServerRef;
+    // We store the port at the server instance, and with the port the RMIclient can get the TubeInterface of the targetServer
+    //private TubeInterface targetServerRef;     
     private Integer server; //server_id
     
     //public Item(Integer key, String name, String description, Integer owner, String path,  Integer server_id) {

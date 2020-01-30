@@ -1,17 +1,27 @@
 package myRESTwsData;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer userId;
-	private String userName;
+	private String username;
 	private String password;
 	//private List<Integer> listOwnedItems;
 		
-    public User(Integer userId, String userName, String password) {
+    public User(Integer userId, String username, String password) {
         this.userId = userId;
-        this.userName = userName;
+        this.username = username;
         this.password = password; 
        // this.listOwnedItems = new ArrayList<Integer> ();
+    }
+    
+    public User() {
+    	
     }
 
     public Integer getUserId() {
@@ -19,7 +29,7 @@ public class User {
     }
 
     public String getUsername() {
-        return userName;
+        return username;
     }
 
     public String getPassword() {
